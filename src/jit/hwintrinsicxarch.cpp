@@ -778,12 +778,185 @@ GenTree* Compiler::impSSE2Intrinsic(NamedIntrinsic        intrinsic,
                                     CORINFO_SIG_INFO*     sig,
                                     bool                  mustExpand)
 {
-    GenTree*  retNode  = nullptr;
-    GenTree*  op1      = nullptr;
-    GenTree*  op2      = nullptr;
-    var_types baseType = TYP_UNKNOWN;
+    GenTree*   retNode = nullptr;
+    GenTree*   op1     = nullptr;
+    GenTree*   op2     = nullptr;
+    GenTree*   op3     = nullptr;
+    StackEntry stEntry;
+    ssize_t    imm8     = 0;
+    var_types  baseType = TYP_UNKNOWN;
     switch (intrinsic)
     {
+        case NI_SSE2_ConvertToVector128Int32:
+        case NI_SSE2_ConvertToVector128Double:
+        case NI_SSE2_ConvertToVector128Single:
+        case NI_SSE2_ConvertToVector128Int32WithTruncation:
+        case NI_SSE2_Sqrt:
+            assert(sig->numArgs == 1);
+            op1      = impSIMDPopStack(TYP_SIMD16);
+            baseType = getBaseTypeOfSIMDType(sig->retTypeSigClass);
+            retNode  = gtNewSimdHWIntrinsicNode(TYP_SIMD16, op1, intrinsic, baseType, 16);
+            break;
+
+        case NI_SSE2_Add:
+        case NI_SSE2_AddSaturate:
+        case NI_SSE2_And:
+        case NI_SSE2_AndNot:
+        case NI_SSE2_Average:
+        case NI_SSE2_CompareEqual:
+        case NI_SSE2_CompareGreaterThan:
+        case NI_SSE2_CompareGreaterThanOrEqual:
+        case NI_SSE2_CompareLessThan:
+        case NI_SSE2_CompareLessThanOrEqual:
+        case NI_SSE2_CompareNotEqual:
+        case NI_SSE2_CompareNotGreaterThan:
+        case NI_SSE2_CompareNotGreaterThanOrEqual:
+        case NI_SSE2_CompareNotLessThan:
+        case NI_SSE2_CompareNotLessThanOrEqual:
+        case NI_SSE2_CompareOrdered:
+        case NI_SSE2_CompareUnordered:
+        case NI_SSE2_Divide:
+        case NI_SSE2_Max:
+        case NI_SSE2_Min:
+        case NI_SSE2_Multiply:
+        case NI_SSE2_MultiplyHigh:
+        case NI_SSE2_MultiplyLow:
+        case NI_SSE2_MultiplyHorizontalAdd:
+        case NI_SSE2_Or:
+        case NI_SSE2_PackSignedSaturate:
+        case NI_SSE2_PackUnsignedSaturate:
+        case NI_SSE2_SumAbsoluteDifferences:
+        case NI_SSE2_Subtract:
+        case NI_SSE2_SubtractSaturate:
+        case NI_SSE2_UnpackHigh:
+        case NI_SSE2_UnpackLow:
+        case NI_SSE2_Xor:
+            assert(sig->numArgs == 2);
+            op2      = impSIMDPopStack(TYP_SIMD16);
+            op1      = impSIMDPopStack(TYP_SIMD16);
+            baseType = getBaseTypeOfSIMDType(sig->retTypeSigClass);
+            retNode  = gtNewSimdHWIntrinsicNode(TYP_SIMD16, op1, op2, intrinsic, baseType, 16);
+            break;
+
+        case NI_SSE2_ExtractInt16:
+        case NI_SSE2_ExtractUInt16:
+        case NI_SSE2_ShiftLeftLogical128BitLane:
+        case NI_SSE2_ShiftLeftLogical128BitLane:
+        case NI_SSE2_ShiftRightLogical128BitLane:
+        case NI_SSE2_ShuffleHigh:
+        case NI_SSE2_ShuffleLow:
+            assert(sig->numArgs == 2);
+            stEntry = impPopStack();
+            op2     = stEntry.val;
+            if (op2->IsIntegralConst())
+            {
+                imm8     = op2->AsIntCon()->IconValue();
+                op1      = impSIMDPopStack(TYP_SIMD16);
+                baseType = getBaseTypeOfSIMDType(sig->retTypeSigClass);
+                retNode  = gtNewSimdHWIntrinsicNode(TYP_SIMD16, op1, imm8, intrinsic, baseType, 16);
+            }
+            else
+            {
+                impPopStack();
+                return gtNewMustThrowException(CORINFO_HELP_THROW_ARGUMENTEXCEPTION, JITtype2varType(sig->retType),
+                                               sig->retTypeClass);
+            }
+            break;
+
+        case NI_SSE2_ShiftLeftLogical:
+        case NI_SSE2_ShiftRightArithmetic:
+        case NI_SSE2_ShiftRightLogical:
+            assert(sig->numArgs == 2);
+            stEntry = impPopStack();
+            op3     = stEntry.val;
+            if (op3->IsIntegralConst())
+            {
+                imm8     = op3->AsIntCon()->IconValue();
+                op1      = impSIMDPopStack(TYP_SIMD16);
+                baseType = getBaseTypeOfSIMDType(sig->retTypeSigClass);
+                retNode  = gtNewSimdHWIntrinsicNode(TYP_SIMD16, op1, imm8, intrinsic, baseType, 16);
+            }
+            else if (op3->OperIsSimdHWIntrinsic())
+            {
+                op2      = impSIMD(TYP_SIMD16, op3, &stEntry.seTypeInfo);
+                op1      = impSIMDPopStack(TYP_SIMD16);
+                baseType = getBaseTypeOfSIMDType(sig->retTypeSigClass);
+                retNode  = gtNewSimdHWIntrinsicNode(TYP_SIMD16, op1, op2, intrinsic, baseType, 16);
+            }
+            else
+            {
+                impPopStack();
+                return gtNewMustThrowException(CORINFO_HELP_THROW_ARGUMENTEXCEPTION, JITtype2varType(sig->retType),
+                                               sig->retTypeClass);
+            }
+            break;
+
+
+        case NI_SSE2_InsertInt16:
+        case NI_SSE2_InsertUInt16:
+            assert(sig->numArgs == 3);
+            stEntry = impPopStack();
+            op3     = stEntry.val;
+            if (op3->IsIntegralConst())
+            {
+                imm8     = op3->AsIntCon()->IconValue();
+                op2      = impPopStack().val->AsVal();
+                op1      = impSIMDPopStack(TYP_SIMD16);
+                baseType = getBaseTypeOfSIMDType(sig->retTypeSigClass);
+                retNode  = gtNewSimdHWIntrinsicNode(TYP_SIMD16, op1, op2, imm8, intrinsic, baseType, 16);
+            }
+            else
+            {
+                impPopStack();
+                impPopStack();
+                return gtNewMustThrowException(CORINFO_HELP_THROW_ARGUMENTEXCEPTION, JITtype2varType(sig->retType),
+                                               sig->retTypeClass);
+            }
+            break;
+
+        case NI_SSE2_Shuffle:
+            assert(sig->numArgs == 3 || sig->numArgs == 2);
+            stEntry = impPopStack();
+            op3     = stEntry.val;
+            if (op3->IsIntegralConst())
+            {
+                if (sig->numArgs == 3)
+                {
+                    imm8     = op3->AsIntCon()->IconValue();
+                    op2      = impSIMDPopStack(TYP_SIMD16);
+                    op1      = impSIMDPopStack(TYP_SIMD16);
+                    baseType = getBaseTypeOfSIMDType(sig->retTypeSigClass);
+                    retNode  = gtNewSimdHWIntrinsicNode(TYP_SIMD16, op1, op2, imm8, intrinsic, baseType, 16);
+                }
+                else if (sig->numArgs == 2)
+                {
+                    imm8     = op3->AsIntCon()->IconValue();
+                    op1      = impSIMDPopStack(TYP_SIMD16);
+                    baseType = getBaseTypeOfSIMDType(sig->retTypeSigClass);
+                    retNode  = gtNewSimdHWIntrinsicNode(TYP_SIMD16, op1, imm8, intrinsic, baseType, 16);
+                }
+                else
+                {
+                    // We should not reach this code
+                    for (unsigned i = 0; i < sig->numArgs - 1; i++)
+                    {
+                        impPopStack();
+                    }
+                    return gtNewMustThrowException(CORINFO_HELP_THROW_ARGUMENTEXCEPTION, JITtype2varType(sig->retType),
+                                                   sig->retTypeClass);
+                }
+            }
+            else
+            {
+                for (unsigned i = 0; i < sig->numArgs - 1; i++)
+                {
+                    impPopStack();
+                }
+                return gtNewMustThrowException(CORINFO_HELP_THROW_ARGUMENTEXCEPTION, JITtype2varType(sig->retType),
+                                               sig->retTypeClass);
+            }
+            break;
+
         default:
             JITDUMP("Not implemented hardware intrinsic");
             break;

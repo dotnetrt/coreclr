@@ -122,9 +122,15 @@ bool emitter::IsDstDstSrcAVXInstruction(instruction ins)
         case INS_paddb:
         case INS_paddd:
         case INS_paddq:
+        case INS_paddsb:
+        case INS_paddsw:
+        case INS_paddusb:
+        case INS_paddusw:
         case INS_paddw:
         case INS_pand:
         case INS_pandn:
+        case INS_pavgb:
+        case INS_pavgw:
         case INS_pcmpeqb:
         case INS_pcmpeqd:
         case INS_pcmpeqq:
@@ -134,6 +140,7 @@ bool emitter::IsDstDstSrcAVXInstruction(instruction ins)
         case INS_pcmpgtq:
         case INS_pcmpgtw:
         case INS_phaddd:
+        case INS_pmaddwd:
         case INS_pmaxsb:
         case INS_pmaxsd:
         case INS_pmaxsw:
@@ -147,13 +154,22 @@ bool emitter::IsDstDstSrcAVXInstruction(instruction ins)
         case INS_pminud:
         case INS_pminuw:
         case INS_pmuldq:
+        case INS_pmulhuw:
+        case INS_pmulhw:
         case INS_pmulld:
         case INS_pmullw:
         case INS_pmuludq:
         case INS_por:
+        case INS_psadbw:
+        case INS_pshufhw:
+        case INS_pshuflw:
         case INS_psubb:
         case INS_psubd:
         case INS_psubq:
+        case INS_psubsb:
+        case INS_psubsw:
+        case INS_psubusb:
+        case INS_psubusw:
         case INS_psubw:
         case INS_punpckhbw:
         case INS_punpckhdq:
@@ -172,6 +188,8 @@ bool emitter::IsDstDstSrcAVXInstruction(instruction ins)
         case INS_subss:
         case INS_unpckhps:
         case INS_unpcklps:
+        case INS_unpckhpd:
+        case INS_unpcklpd:
         case INS_vinsertf128:
         case INS_vinserti128:
         case INS_vperm2i128:
@@ -3499,7 +3517,7 @@ void emitter::emitIns_R(instruction ins, emitAttr attr, regNumber reg)
             if (size == EA_1BYTE)
                 sz = 2; // Use the long form as the small one has no 'w' bit
             else
-                sz    = 1; // Use short form
+                sz = 1; // Use short form
 
 #endif // !_TARGET_AMD64_
 
@@ -4818,7 +4836,7 @@ void emitter::emitIns_AR_R(instruction ins, emitAttr attr, regNumber ireg, regNu
 #if FEATURE_STACK_FP_X87
         fmt = emitInsModeFormat(ins, IF_ARD, IF_TRD_ARD, IF_AWR_TRD);
 #else  // !FEATURE_STACK_FP_X87
-        fmt       = emitInsModeFormat(ins, IF_ARD);
+        fmt = emitInsModeFormat(ins, IF_ARD);
 #endif // !FEATURE_STACK_FP_X87
     }
     else
@@ -5293,6 +5311,7 @@ void emitter::emitIns_SIMD_R_R_C(
     }
 }
 
+
 void emitter::emitIns_SIMD_R_R_R(instruction ins, emitAttr attr, regNumber reg, regNumber reg1, regNumber reg2)
 {
     if (UseVEXEncoding())
@@ -5431,7 +5450,7 @@ void emitter::emitIns_SIMD_R_R_S_I(
         emitIns_R_S_I(ins, attr, reg, varx, offs, ival);
     }
 }
-#endif
+#endif // FEATURE_HW_INTRINSICS
 
 /*****************************************************************************
  *

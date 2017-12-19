@@ -2064,6 +2064,8 @@ public:
     GenTreeHWIntrinsic* gtNewSimdHWIntrinsicNode(
         var_types type, GenTree* op1, NamedIntrinsic hwIntrinsicID, var_types baseType, unsigned size);
     GenTreeHWIntrinsic* gtNewSimdHWIntrinsicNode(
+        var_types type, GenTree* op1, ssize_t iVal, NamedIntrinsic hwIntrinsicID, var_types baseType, unsigned size);
+    GenTreeHWIntrinsic* gtNewSimdHWIntrinsicNode(
         var_types type, GenTree* op1, GenTree* op2, NamedIntrinsic hwIntrinsicID, var_types baseType, unsigned size);
     GenTreeHWIntrinsic* gtNewSimdHWIntrinsicNode(var_types      type,
                                                  GenTree*       op1,

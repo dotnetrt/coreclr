@@ -304,7 +304,8 @@ void GenTree::InitNodeSize()
     GenTree::s_gtNodeSizes[GT_INDEX_ADDR]        = TREE_NODE_SZ_LARGE;
     GenTree::s_gtNodeSizes[GT_ARR_BOUNDS_CHECK] = TREE_NODE_SZ_LARGE;
 #ifdef FEATURE_SIMD
-    GenTree::s_gtNodeSizes[GT_SIMD_CHK] = TREE_NODE_SZ_LARGE;
+    GenTree::s_gtNodeSizes[GT_SIMD_CHK]         = TREE_NODE_SZ_LARGE;
+    GenTree::s_gtNodeSizes[GT_SIMD]             = TREE_NODE_SZ_LARGE;
 #endif // FEATURE_SIMD
     GenTree::s_gtNodeSizes[GT_ARR_ELEM]         = TREE_NODE_SZ_LARGE;
     GenTree::s_gtNodeSizes[GT_ARR_INDEX]        = TREE_NODE_SZ_LARGE;
@@ -321,6 +322,9 @@ void GenTree::InitNodeSize()
     GenTree::s_gtNodeSizes[GT_STORE_DYN_BLK]    = TREE_NODE_SZ_LARGE;
     GenTree::s_gtNodeSizes[GT_INTRINSIC]        = TREE_NODE_SZ_LARGE;
     GenTree::s_gtNodeSizes[GT_ALLOCOBJ]         = TREE_NODE_SZ_LARGE;
+#ifdef FEATURE_HW_INTRINSICS
+    GenTree::s_gtNodeSizes[GT_HWIntrinsic]      = TREE_NODE_SZ_LARGE;
+#endif
 #if USE_HELPERS_FOR_INT_DIV
     GenTree::s_gtNodeSizes[GT_DIV]              = TREE_NODE_SZ_LARGE;
     GenTree::s_gtNodeSizes[GT_UDIV]             = TREE_NODE_SZ_LARGE;
@@ -402,7 +406,7 @@ void GenTree::InitNodeSize()
 #endif // FEATURE_PUT_STRUCT_ARG_STK
 
 #ifdef FEATURE_SIMD
-    static_assert_no_msg(sizeof(GenTreeSIMD)         <= TREE_NODE_SZ_SMALL);
+    static_assert_no_msg(sizeof(GenTreeSIMD)         <= TREE_NODE_SZ_LARGE); // *** large node
 #endif // FEATURE_SIMD
     // clang-format on
 }
