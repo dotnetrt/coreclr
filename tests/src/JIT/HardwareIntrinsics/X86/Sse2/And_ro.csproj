@@ -23,13 +23,12 @@
   <PropertyGroup>
     <DebugType>None</DebugType>
     <Optimize>True</Optimize>
-  </PropertyGroup> 
+  </PropertyGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="And.cs" />
-    <Compile Include="Program.Common.cs" />
     <Compile Include="TestTableVector128.cs" />
   </ItemGroup>
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), dir.targets))\dir.targets" />

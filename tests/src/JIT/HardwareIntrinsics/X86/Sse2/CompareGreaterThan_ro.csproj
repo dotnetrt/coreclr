@@ -29,7 +29,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompareGreaterThan.cs" />
-    <Compile Include="Program.Common.cs" />
     <Compile Include="TestTableVector128.cs" />
   </ItemGroup>
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), dir.targets))\dir.targets" />

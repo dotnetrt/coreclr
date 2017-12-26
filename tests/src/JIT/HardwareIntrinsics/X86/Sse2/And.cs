@@ -37,55 +37,64 @@ namespace IntelHardwareIntrinsicTest
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<double>, Vector128<double>, Vector128<double>) value = doubleTable[i];
-                        doubleTable.SetOutArray(Sse2.And(value.Item1, value.Item2));
+                        var result = Sse2.And(value.Item1, value.Item2);
+                        doubleTable.SetOutArray(result);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<long>, Vector128<long>, Vector128<long>) value = longTable[i];
-                        longTable.SetOutArray(Sse2.And(value.Item1, value.Item2));
+                        var result = Sse2.And(value.Item1, value.Item2);
+                        longTable.SetOutArray(result);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<ulong>, Vector128<ulong>, Vector128<ulong>) value = ulongTable[i];
-                        ulongTable.SetOutArray(Sse2.And(value.Item1, value.Item2));
+                        var result = Sse2.And(value.Item1, value.Item2);
+                        ulongTable.SetOutArray(result);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<int>, Vector128<int>, Vector128<int>) value = intTable[i];
-                        intTable.SetOutArray(Sse2.And(value.Item1, value.Item2));
+                        var result = Sse2.And(value.Item1, value.Item2);
+                        intTable.SetOutArray(result);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<uint>, Vector128<uint>, Vector128<uint>) value = uintTable[i];
-                        uintTable.SetOutArray(Sse2.And(value.Item1, value.Item2));
+                        var result = Sse2.And(value.Item1, value.Item2);
+                        uintTable.SetOutArray(result);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<short>, Vector128<short>, Vector128<short>) value = shortTable[i];
-                        shortTable.SetOutArray(Sse2.And(value.Item1, value.Item2));
+                        var result = Sse2.And(value.Item1, value.Item2);
+                        shortTable.SetOutArray(result);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<ushort>, Vector128<ushort>, Vector128<ushort>) value = ushortTable[i];
-                        ushortTable.SetOutArray(Sse2.And(value.Item1, value.Item2));
+                        var result = Sse2.And(value.Item1, value.Item2);
+                        ushortTable.SetOutArray(result);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<sbyte>, Vector128<sbyte>, Vector128<sbyte>) value = sbyteTable[i];
-                        sbyteTable.SetOutArray(Sse2.And(value.Item1, value.Item2));
+                        var result = Sse2.And(value.Item1, value.Item2);
+                        sbyteTable.SetOutArray(result);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<byte>, Vector128<byte>, Vector128<byte>) value = byteTable[i];
-                        byteTable.SetOutArray(Sse2.And(value.Item1, value.Item2));
+                        var result = Sse2.And(value.Item1, value.Item2);
+                        byteTable.SetOutArray(result);
                     }
 
                     CheckMethod<double> checkDouble = (double x, double y, double z, ref double a) => (a = BinaryAnd(x, y)) == z;
@@ -163,7 +172,7 @@ namespace IntelHardwareIntrinsicTest
             }
             else
             {
-                testResult = Fail;
+                Console.WriteLine($"Sse2.IsSupported: {Sse2.IsSupported}, skipped tests of {typeof(Sse2)}.{methodUnderTestName}");
             }
 
             return testResult;

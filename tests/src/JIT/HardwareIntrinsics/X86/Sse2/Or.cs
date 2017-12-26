@@ -4,10 +4,8 @@
 //
 
 using System;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics.X86;
 using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
 
 namespace IntelHardwareIntrinsicTest
 {
@@ -20,7 +18,7 @@ namespace IntelHardwareIntrinsicTest
         {
             int testResult = Pass;
             int testsCount = 21;
-            string methodUnderTestName = nameof(Sse2.AndNot);
+            string methodUnderTestName = nameof(Sse2.Or);
 
             if (Sse2.IsSupported)
             {
@@ -37,135 +35,135 @@ namespace IntelHardwareIntrinsicTest
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<double>, Vector128<double>, Vector128<double>) value = doubleTable[i];
-                        var result = Sse2.AndNot(value.Item1, value.Item2);
+                        var result = Sse2.Or(value.Item1, value.Item2);
                         doubleTable.SetOutArray(result);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<long>, Vector128<long>, Vector128<long>) value = longTable[i];
-                        var result = Sse2.AndNot(value.Item1, value.Item2);
+                        var result = Sse2.Or(value.Item1, value.Item2);
                         longTable.SetOutArray(result);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<ulong>, Vector128<ulong>, Vector128<ulong>) value = ulongTable[i];
-                        var result = Sse2.AndNot(value.Item1, value.Item2);
+                        var result = Sse2.Or(value.Item1, value.Item2);
                         ulongTable.SetOutArray(result);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<int>, Vector128<int>, Vector128<int>) value = intTable[i];
-                        var result = Sse2.AndNot(value.Item1, value.Item2);
+                        var result = Sse2.Or(value.Item1, value.Item2);
                         intTable.SetOutArray(result);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<uint>, Vector128<uint>, Vector128<uint>) value = uintTable[i];
-                        var result = Sse2.AndNot(value.Item1, value.Item2);
+                        var result = Sse2.Or(value.Item1, value.Item2);
                         uintTable.SetOutArray(result);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<short>, Vector128<short>, Vector128<short>) value = shortTable[i];
-                        var result = Sse2.AndNot(value.Item1, value.Item2);
+                        var result = Sse2.Or(value.Item1, value.Item2);
                         shortTable.SetOutArray(result);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<ushort>, Vector128<ushort>, Vector128<ushort>) value = ushortTable[i];
-                        var result = Sse2.AndNot(value.Item1, value.Item2);
+                        var result = Sse2.Or(value.Item1, value.Item2);
                         ushortTable.SetOutArray(result);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<sbyte>, Vector128<sbyte>, Vector128<sbyte>) value = sbyteTable[i];
-                        var result = Sse2.AndNot(value.Item1, value.Item2);
+                        var result = Sse2.Or(value.Item1, value.Item2);
                         sbyteTable.SetOutArray(result);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<byte>, Vector128<byte>, Vector128<byte>) value = byteTable[i];
-                        var result = Sse2.AndNot(value.Item1, value.Item2);
+                        var result = Sse2.Or(value.Item1, value.Item2);
                         byteTable.SetOutArray(result);
                     }
 
-                    CheckMethod<double> checkDouble = (double x, double y, double z, ref double a) => (a = BinaryAndNot(x, y)) == z;
+                    CheckMethod<double> checkDouble = (double x, double y, double z, ref double a) => (a = BitwiseOr(x, y)) == z;
 
                     if (!doubleTable.CheckResult(checkDouble))
                     {
-                        PrintError(doubleTable, methodUnderTestName, "(double x, double y, double z, ref double a) => (a = BinaryAndNot(x, y)) == z", checkDouble);
+                        PrintError(doubleTable, methodUnderTestName, "(double x, double y, double z, ref double a) => (a = BitwiseOr(x, y)) == z", checkDouble);
                         testResult = Fail;
                     }
 
-                    CheckMethod<long> checkLong = (long x, long y, long z, ref long a) => (a = (~x) & y) == z;
+                    CheckMethod<long> checkLong = (long x, long y, long z, ref long a) => (a = x | y) == z;
 
                     if (!longTable.CheckResult(checkLong))
                     {
-                        PrintError(longTable, methodUnderTestName, "(long x, long y, long z, ref long a) => (a = (~x) & y) == z", checkLong);
+                        PrintError(longTable, methodUnderTestName, "(long x, long y, long z, ref long a) => (a = x | y) == z", checkLong);
                         testResult = Fail;
                     }
 
-                    CheckMethod<ulong> checkUlong = (ulong x, ulong y, ulong z, ref ulong a) => (a = (~x) & y) == z;
+                    CheckMethod<ulong> checkUlong = (ulong x, ulong y, ulong z, ref ulong a) => (a = x | y) == z;
 
                     if (!longTable.CheckResult(checkLong))
                     {
-                        PrintError(ulongTable, methodUnderTestName, "(ulong x, ulong y, ulong z, ref ulong a) => (a = (~x) & y) == z", checkUlong);
+                        PrintError(ulongTable, methodUnderTestName, "(ulong x, ulong y, ulong z, ref ulong a) => (a = x | y) == z", checkUlong);
                         testResult = Fail;
                     }
 
-                    CheckMethod<int> checkInt32 = (int x, int y, int z, ref int a) => (a = (~x) & y) == z;
+                    CheckMethod<int> checkInt32 = (int x, int y, int z, ref int a) => (a = x | y) == z;
 
                     if (!intTable.CheckResult(checkInt32))
                     {
-                        PrintError(intTable, methodUnderTestName, "(int x, int y, int z, ref int a) => (a = (~x) & y) == z", checkInt32);
+                        PrintError(intTable, methodUnderTestName, "(int x, int y, int z, ref int a) => (a = x | y) == z", checkInt32);
                         testResult = Fail;
                     }
 
-                    CheckMethod<uint> checkUInt32 = (uint x, uint y, uint z, ref uint a) => (a = (~x) & y) == z;
+                    CheckMethod<uint> checkUInt32 = (uint x, uint y, uint z, ref uint a) => (a = x | y) == z;
 
                     if (!uintTable.CheckResult(checkUInt32))
                     {
-                        PrintError(uintTable, methodUnderTestName, "(uint x, uint y, uint z, ref uint a) => (a = (~x) & y) == z", checkUInt32);
+                        PrintError(uintTable, methodUnderTestName, "(uint x, uint y, uint z, ref uint a) => (a = x | y) == z", checkUInt32);
                         testResult = Fail;
                     }
 
-                    CheckMethod<short> checkInt16 = (short x, short y, short z, ref short a) => (a = (short)((~x) & y)) == z;
+                    CheckMethod<short> checkInt16 = (short x, short y, short z, ref short a) => (a = (short)(x | y)) == z;
 
                     if (!shortTable.CheckResult(checkInt16))
                     {
-                        PrintError(shortTable, methodUnderTestName, "(short x, short y, short z, ref short a) => (a = (short)((~x) & y)) == z", checkInt16);
+                        PrintError(shortTable, methodUnderTestName, "(short x, short y, short z, ref short a) => (a = (short)(x | y)) == z", checkInt16);
                         testResult = Fail;
                     }
 
-                    CheckMethod<ushort> checkUInt16 = (ushort x, ushort y, ushort z, ref ushort a) => (a = (ushort)((~x) & y)) == z;
+                    CheckMethod<ushort> checkUInt16 = (ushort x, ushort y, ushort z, ref ushort a) => (a = (ushort)(x | y)) == z;
 
                     if (!ushortTable.CheckResult(checkUInt16))
                     {
-                        PrintError(ushortTable, methodUnderTestName, "(ushort x, ushort y, ushort z, ref ushort a) => (a = (ushort)((~x) & y)) == z", checkUInt16);
+                        PrintError(ushortTable, methodUnderTestName, "(ushort x, ushort y, ushort z, ref ushort a) => (a = (ushort)(x | y)) == z", checkUInt16);
                         testResult = Fail;
                     }
 
-                    CheckMethod<sbyte> checkSByte = (sbyte x, sbyte y, sbyte z, ref sbyte a) => (a = (sbyte)((~x) & y)) == z;
+                    CheckMethod<sbyte> checkSByte = (sbyte x, sbyte y, sbyte z, ref sbyte a) => (a = (sbyte)(x | y)) == z;
 
                     if (!sbyteTable.CheckResult(checkSByte))
                     {
-                        PrintError(sbyteTable, methodUnderTestName, "(sbyte x, sbyte y, sbyte z, ref sbyte a) =>(a = (sbyte)((~x) & y)) == z", checkSByte);
+                        PrintError(sbyteTable, methodUnderTestName, "(sbyte x, sbyte y, sbyte z, ref sbyte a) => (a = (sbyte)(x | y)) == z", checkSByte);
                         testResult = Fail;
                     }
 
-                    CheckMethod<byte> checkByte = (byte x, byte y, byte z, ref byte a) => (a = (byte)((~x) & y)) == z;
+                    CheckMethod<byte> checkByte = (byte x, byte y, byte z, ref byte a) => (a = (byte)(x | y)) == z;
 
                     if (!byteTable.CheckResult(checkByte))
                     {
-                        PrintError(byteTable, methodUnderTestName, "(byte x, byte y, byte z, ref byte a) =>  (a = (byte)((~x) & y)) == z", checkByte);
+                        PrintError(byteTable, methodUnderTestName, "(byte x, byte y, byte z, ref byte a) => (a = (byte)(x | y)) == z", checkByte);
                         testResult = Fail;
                     }
                 }
@@ -178,12 +176,12 @@ namespace IntelHardwareIntrinsicTest
             return testResult;
         }
 
-        public static double BinaryAndNot(double x, double y)
+        public static unsafe double BitwiseOr(double x, double y)
         {
-            var xLong = BitConverter.ToInt64(BitConverter.GetBytes(x));
-            var yLong = BitConverter.ToInt64(BitConverter.GetBytes(y));
-            xLong = ((~xLong) & yLong);
-            return BitConverter.ToDouble(BitConverter.GetBytes(xLong));
+            var xUlong = BitConverter.ToUInt64(BitConverter.GetBytes(x));
+            var yUlong = BitConverter.ToUInt64(BitConverter.GetBytes(y));
+            var longAnd = xUlong | yUlong;
+            return BitConverter.ToDouble(BitConverter.GetBytes(longAnd));
         }
     }
 }

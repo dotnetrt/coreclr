@@ -13,7 +13,8 @@ using System.Runtime.Intrinsics.X86;
 namespace IntelHardwareIntrinsicTest
 {
     public delegate bool CheckMethod<T>(T x, T y, T z, ref T c);
-    public unsafe struct TestTableVector128<T> : IDisposable where T : struct
+
+    public unsafe struct TestTableSse2<T> : IDisposable where T : struct
     {
         private const int _stepSize = 16;
         private int _scalarStepSize;
@@ -59,25 +60,26 @@ namespace IntelHardwareIntrinsicTest
             return (inArray1[index], inArray2[index], outArray[index], checkArray[index]);
         }
 
-        public static TestTableVector128<T> Create(int lengthInVectors)
+        public static TestTableSse2<T> Create(int lengthInVectors)
         {
             int length = _stepSize / Marshal.SizeOf<T>() * lengthInVectors;
-            var table = new TestTableVector128<T>(new T[length], new T[length], new T[length]);
+            var table = new TestTableSse2<T>(new T[length], new T[length], new T[length], new T[length]);
             table.Initialize();
             return table;
         }
 
-        public TestTableVector128(T[] a, T[] b, T[] c)
+        public TestTableSse2(T[] a, T[] b, T[] c, T[] d)
         {
             inArray1 = a;
             inArray2 = b;
             outArray = c;
-            checkArray = new T[c.Length];
-            _scalarStepSize = a.Length / b.Length;
+            checkArray = d;
+            _scalarStepSize = Marshal.SizeOf<T>();
             _index = 0;
             _inHandle1 = GCHandle.Alloc(inArray1, GCHandleType.Pinned);
             _inHandle2 = GCHandle.Alloc(inArray2, GCHandleType.Pinned);
             _outHandle = GCHandle.Alloc(outArray, GCHandleType.Pinned);
+            _checkHandle = GCHandle.Alloc(checkArray, GCHandleType.Pinned);
             Initialize();
         }
 
@@ -106,8 +108,8 @@ namespace IntelHardwareIntrinsicTest
             }
             else
             {
-                random.NextBytes(new Span<byte>(InArray1Ptr, inArray1.Length));
-                random.NextBytes(new Span<byte>(InArray2Ptr, inArray1.Length));
+                random.NextBytes(new Span<byte>(InArray1Ptr, inArray1.Length * _scalarStepSize));
+                random.NextBytes(new Span<byte>(InArray2Ptr, inArray1.Length * _scalarStepSize));
             }
         }
 
@@ -129,21 +131,22 @@ namespace IntelHardwareIntrinsicTest
             _inHandle1.Free();
             _inHandle2.Free();
             _outHandle.Free();
+            _checkHandle.Free();
         }
     }
 
     internal static partial class Program
     {
-        private static void PrintError<T>(TestTableVector128<T> testTable, string functionName = "", string testFuncString = "",
+        private static void PrintError<T>(TestTableSse2<T> testTable, string functionName = "", string testFuncString = "",
             CheckMethod<T> check = null) where T : struct
         {
             Console.WriteLine($"{typeof(Sse2)}.{functionName} failed on {typeof(T)}:");
             Console.WriteLine($"Test function: {testFuncString}");
-            Console.WriteLine($"{ typeof(Sse2)}.{ nameof(Sse2.CompareGreaterThan)} test tuples:");
+            Console.WriteLine($"{ typeof(Sse2)}.{functionName} test tuples:");
             for (int i = 0; i < testTable.outArray.Length; i++)
             {
                 (T, T, T, T) item = testTable.GetDataPoint(i);
-                Console.WriteLine(
+                Console.Write(
                     $"({((IFormattable)item.Item1).ToString(null, NumberFormatInfo.InvariantInfo)}, " +
                     $"{((IFormattable)item.Item2).ToString(null, NumberFormatInfo.InvariantInfo)}, " +
                     $"{((IFormattable)item.Item3).ToString(null, NumberFormatInfo.InvariantInfo)}, " +
