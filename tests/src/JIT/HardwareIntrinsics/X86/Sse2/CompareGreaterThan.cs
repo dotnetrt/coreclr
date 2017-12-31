@@ -4,11 +4,8 @@
 //
 
 using System;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics.X86;
 using System.Runtime.Intrinsics;
-using System.Globalization;
+using System.Runtime.Intrinsics.X86;
 
 namespace IntelHardwareIntrinsicTest
 {
@@ -25,10 +22,10 @@ namespace IntelHardwareIntrinsicTest
 
             if (Sse2.IsSupported)
             {
-                using (var doubleTable = TestTableVector128<double>.Create(testsCount))
-                using (var intTable = TestTableVector128<int>.Create(testsCount))
-                using (var shortTable = TestTableVector128<short>.Create(testsCount))
-                using (var sbyteTable = TestTableVector128<sbyte>.Create(testsCount))
+                using (var doubleTable = TestTableSse2<double>.Create(testsCount))
+                using (var intTable = TestTableSse2<int>.Create(testsCount))
+                using (var shortTable = TestTableSse2<short>.Create(testsCount))
+                using (var sbyteTable = TestTableSse2<sbyte>.Create(testsCount))
                 {
                     for (int i = 0; i < testsCount; i++)
                     {
@@ -60,16 +57,8 @@ namespace IntelHardwareIntrinsicTest
 
                     CheckMethod<double> checkDouble = (double x, double y, double z, ref double a) =>
                     {
-                        if (x > y)
-                        {
-                            a = double.NaN;
-                            return double.IsNaN(z);
-                        }
-                        else
-                        {
-                            a = 0;
-                            return z == 0;
-                        }
+                        a = x > y ? BitConverter.Int64BitsToDouble(-1) : 0;
+                        return double.IsNaN(z) ? double.IsNaN(a) : a == z;
                     };
 
                     if (!doubleTable.CheckResult(checkDouble))

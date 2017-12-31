@@ -22,7 +22,7 @@ namespace IntelHardwareIntrinsicTest
 
             if (Sse2.IsSupported)
             {
-                using (var doubleTable = TestTableVector128<double>.Create(testsCount))
+                using (var doubleTable = TestTableSse2<double>.Create(testsCount))
                 {
                     for (int i = 0; i < testsCount; i++)
                     {
@@ -33,16 +33,8 @@ namespace IntelHardwareIntrinsicTest
 
                     CheckMethod<double> checkDouble = (double x, double y, double z, ref double a) =>
                     {
-                        if (!(x <= y))
-                        {
-                            a = double.NaN;
-                            return double.IsNaN(z);
-                        }
-                        else
-                        {
-                            a = 0;
-                            return z == 0;
-                        }
+                        a = !(x <= y) ? BitConverter.Int64BitsToDouble(-1) : 0;
+                        return double.IsNaN(z) ? double.IsNaN(a) : a == z;
                     };
 
                     if (!doubleTable.CheckResult(checkDouble))

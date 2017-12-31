@@ -22,10 +22,10 @@ namespace IntelHardwareIntrinsicTest
 
             if (Sse2.IsSupported)
             {
-                using (var shortTable = TestTableVector128<short>.Create(testsCount))
-                using (var ushortTable = TestTableVector128<ushort>.Create(testsCount))
-                using (var sbyteTable = TestTableVector128<sbyte>.Create(testsCount))
-                using (var byteTable = TestTableVector128<byte>.Create(testsCount))
+                using (var shortTable = TestTableSse2<short>.Create(testsCount))
+                using (var ushortTable = TestTableSse2<ushort>.Create(testsCount))
+                using (var sbyteTable = TestTableSse2<sbyte>.Create(testsCount))
+                using (var byteTable = TestTableSse2<byte>.Create(testsCount))
                 {
                     for (int i = 0; i < testsCount; i++)
                     {

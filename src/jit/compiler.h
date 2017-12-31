@@ -2062,11 +2062,11 @@ public:
                                                  var_types      baseType,
                                                  unsigned       size);
     GenTreeHWIntrinsic* gtNewSimdHWIntrinsicNode(
-        var_types type, GenTree* op1, NamedIntrinsic hwIntrinsicID, var_types baseType, unsigned size);
+        var_types type, GenTree* op1, NamedIntrinsic hwIntrinsicID, var_types baseType, unsigned size, var_types srcType = TYP_UNDEF);
     GenTreeHWIntrinsic* gtNewSimdHWIntrinsicNode(
-        var_types type, GenTree* op1, ssize_t iVal, NamedIntrinsic hwIntrinsicID, var_types baseType, unsigned size);
+        var_types type, GenTree* op1, ssize_t iVal, NamedIntrinsic hwIntrinsicID, var_types baseType, unsigned size, var_types srcType = TYP_UNDEF);
     GenTreeHWIntrinsic* gtNewSimdHWIntrinsicNode(
-        var_types type, GenTree* op1, GenTree* op2, NamedIntrinsic hwIntrinsicID, var_types baseType, unsigned size);
+        var_types type, GenTree* op1, GenTree* op2, NamedIntrinsic hwIntrinsicID, var_types baseType, unsigned size, var_types srcType = TYP_UNDEF);
     GenTreeHWIntrinsic* gtNewSimdHWIntrinsicNode(var_types      type,
                                                  GenTree*       op1,
                                                  GenTree*       op2,
@@ -2081,7 +2081,8 @@ public:
                                                  GenTree*       op4,
                                                  NamedIntrinsic hwIntrinsicID,
                                                  var_types      baseType,
-                                                 unsigned       size);
+                                                 unsigned       size,
+                                                 var_types      srcType = TYP_UNDEF);
     GenTreeHWIntrinsic* gtNewScalarHWIntrinsicNode(var_types type, GenTree* op1, NamedIntrinsic hwIntrinsicID);
     GenTreeHWIntrinsic* gtNewScalarHWIntrinsicNode(var_types      type,
                                                    GenTree*       op1,

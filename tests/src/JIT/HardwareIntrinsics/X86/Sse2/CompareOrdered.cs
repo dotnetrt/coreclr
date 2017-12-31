@@ -22,7 +22,7 @@ namespace IntelHardwareIntrinsicTest
 
             if (Sse2.IsSupported)
             {
-                using (var doubleTable = TestTableVector128<double>.Create(testsCount))
+                using (var doubleTable = TestTableSse2<double>.Create(testsCount))
                 {
                     for (int i = 0; i < testsCount; i++)
                     {

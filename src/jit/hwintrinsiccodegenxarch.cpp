@@ -1982,13 +1982,14 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
             instruction ins;
             switch (baseType)
             {
-                case TYP_BYTE:
+                case TYP_UBYTE:
                     ins = INS_pavgb;
                     break;
                 case TYP_USHORT:
                     ins = INS_pavgw;
                     break;
                 default:
+
                     unreached();
                     break;
             }
@@ -2034,6 +2035,7 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
         }
 
         case NI_SSE2_CompareGreaterThan:
+        case NI_SSE2_CompareNotLessThanOrEqual:
         {
             op2Reg = op2->gtRegNum;
 
@@ -2043,7 +2045,7 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
                 case TYP_DOUBLE:
                     // Instruction with immediate byte operand controlling comparison type
                     ins = INS_cmppd;
-                    emit->emitIns_SIMD_R_R_R_I(ins, targetReg, op1Reg, op2Reg, 5, TYP_SIMD16);
+                    emit->emitIns_SIMD_R_R_R_I(ins, targetReg, op1Reg, op2Reg, 6, TYP_SIMD16);
                     break;
                 case TYP_INT:
                     ins = INS_pcmpgtd;
@@ -2067,6 +2069,7 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
         }
 
         case NI_SSE2_CompareGreaterThanOrEqual:
+        case NI_SSE2_CompareNotLessThan:
         {
             op2Reg = op2->gtRegNum;
 
@@ -2081,12 +2084,12 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
                     break;
             }
 
-            // Instruction with immediate byte operand controlling comparison type
-            emit->emitIns_SIMD_R_R_R_I(ins, targetReg, op1Reg, op2Reg, 6, TYP_SIMD16);
+            emit->emitIns_SIMD_R_R_R_I(ins, targetReg, op1Reg, op2Reg, 5, TYP_SIMD16);
             break;
         }
 
         case NI_SSE2_CompareLessThan:
+        case NI_SSE2_CompareNotGreaterThanOrEqual:
         {
             op2Reg = op2->gtRegNum;
 
@@ -2094,9 +2097,7 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
             switch (baseType)
             {
                 case TYP_DOUBLE:
-                    // Instruction with immediate byte operand controlling comparison type
                     ins = INS_cmppd;
-                    emit->emitIns_SIMD_R_R_R_I(ins, targetReg, op2Reg, op1Reg, 5, TYP_SIMD16);
                     break;
                 case TYP_INT:
                     ins = INS_pcmpgtd;
@@ -2114,12 +2115,17 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
 
             if (ins != INS_cmppd)
             {
-                emit->emitIns_SIMD_R_R_R(ins, targetReg, op2Reg, op1Reg, TYP_SIMD16);
+                emit->emitIns_SIMD_R_R_R(ins, targetReg, op1Reg, op2Reg, TYP_SIMD16);
+            }
+            else
+            {
+                emit->emitIns_SIMD_R_R_R_I(ins, targetReg, op1Reg, op2Reg, 1, TYP_SIMD16);
             }
             break;
         }
 
         case NI_SSE2_CompareLessThanOrEqual:
+        case NI_SSE2_CompareNotGreaterThan:
         {
             op2Reg = op2->gtRegNum;
 
@@ -2156,87 +2162,6 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
 
             // Instruction with immediate byte operand controlling comparison type
             emit->emitIns_SIMD_R_R_R_I(ins, targetReg, op1Reg, op2Reg, 4, TYP_SIMD16);
-            break;
-        }
-
-        case NI_SSE2_CompareNotGreaterThan:
-        {
-            op2Reg = op2->gtRegNum;
-
-            instruction ins;
-            switch (baseType)
-            {
-                case TYP_DOUBLE:
-                    ins = INS_cmppd;
-                    break;
-                default:
-                    unreached();
-                    break;
-            }
-
-            // Instruction with immediate byte operand controlling comparison type
-            emit->emitIns_SIMD_R_R_R_I(ins, targetReg, op1Reg, op2Reg, 2, TYP_SIMD16);
-            break;
-        }
-
-        // This case is according to description identical to the above one
-        case NI_SSE2_CompareNotGreaterThanOrEqual:
-        {
-            op2Reg = op2->gtRegNum;
-
-            instruction ins;
-            switch (baseType)
-            {
-                case TYP_DOUBLE:
-                    ins = INS_cmppd;
-                    break;
-                default:
-                    unreached();
-                    break;
-            }
-
-            // Instruction with immediate byte operand controlling comparison type
-            emit->emitIns_SIMD_R_R_R_I(ins, targetReg, op1Reg, op2Reg, 2, TYP_SIMD16);
-            break;
-        }
-
-        case NI_SSE2_CompareNotLessThan:
-        {
-            op2Reg = op2->gtRegNum;
-
-            instruction ins;
-            switch (baseType)
-            {
-                case TYP_DOUBLE:
-                    ins = INS_cmppd;
-                    break;
-                default:
-                    unreached();
-                    break;
-            }
-
-            // Instruction with immediate byte operand controlling comparison type
-            emit->emitIns_SIMD_R_R_R_I(ins, targetReg, op1Reg, op2Reg, 5, TYP_SIMD16);
-            break;
-        }
-
-        case NI_SSE2_CompareNotLessThanOrEqual:
-        {
-            op2Reg = op2->gtRegNum;
-
-            instruction ins;
-            switch (baseType)
-            {
-                case TYP_DOUBLE:
-                    ins = INS_cmppd;
-                    break;
-                default:
-                    unreached();
-                    break;
-            }
-
-            // Instruction with immediate byte operand controlling comparison type
-            emit->emitIns_SIMD_R_R_R_I(ins, targetReg, op1Reg, op2Reg, 6, TYP_SIMD16);
             break;
         }
 
@@ -2282,10 +2207,10 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
 
         case NI_SSE2_ConvertToVector128Int32:
         {
-            op2Reg = op2->gtRegNum;
-
             instruction ins;
-            switch (baseType)
+            // Choose instruction based on argument type
+            var_types srcBaseType = node->AsHWIntrinsic()->gtSrcOneType;
+            switch (srcBaseType)
             {
                 case TYP_FLOAT:
                     ins = INS_cvtps2dq;
@@ -2298,16 +2223,16 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
                     break;
             }
 
-            emit->emitIns_SIMD_R_R_R(ins, targetReg, op1Reg, op2Reg, TYP_SIMD16);
+            emit->emitIns_SIMD_R_R(ins, targetReg, op1Reg, TYP_SIMD16);
             break;
         }
 
         case NI_SSE2_ConvertToVector128Double:
         {
-            op2Reg = op2->gtRegNum;
-
             instruction ins;
-            switch (baseType)
+            // Choose instruction based on argument type
+            var_types srcBaseType = node->AsHWIntrinsic()->gtSrcOneType;
+            switch (srcBaseType)
             {
                 case TYP_FLOAT:
                     ins = INS_cvtps2pd;
@@ -2320,16 +2245,16 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
                     break;
             }
 
-            emit->emitIns_SIMD_R_R_R(ins, targetReg, op1Reg, op2Reg, TYP_SIMD16);
+            emit->emitIns_SIMD_R_R(ins, targetReg, op1Reg, TYP_SIMD16);
             break;
         }
 
         case NI_SSE2_ConvertToVector128Single:
         {
-            op2Reg = op2->gtRegNum;
-
             instruction ins;
-            switch (baseType)
+            // Choose instruction based on argument type
+            var_types srcBaseType = node->AsHWIntrinsic()->gtSrcOneType;
+            switch (srcBaseType)
             {
                 case TYP_DOUBLE:
                     ins = INS_cvtpd2ps;
@@ -2342,16 +2267,16 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
                     break;
             }
 
-            emit->emitIns_SIMD_R_R_R(ins, targetReg, op1Reg, op2Reg, TYP_SIMD16);
+            emit->emitIns_SIMD_R_R(ins, targetReg, op1Reg, TYP_SIMD16);
             break;
         }
 
         case NI_SSE2_ConvertToVector128Int32WithTruncation:
         {
-            op2Reg = op2->gtRegNum;
-
             instruction ins;
-            switch (baseType)
+            // Choose instruction based on argument type
+            var_types srcBaseType = node->AsHWIntrinsic()->gtSrcOneType;
+            switch (srcBaseType)
             {
                 case TYP_FLOAT:
                     ins = INS_cvttps2dq;
@@ -2364,7 +2289,7 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
                     break;
             }
 
-            emit->emitIns_SIMD_R_R_R(ins, targetReg, op1Reg, op2Reg, TYP_SIMD16);
+            emit->emitIns_SIMD_R_R(ins, targetReg, op1Reg, TYP_SIMD16);
             break;
         }
 
@@ -2388,6 +2313,7 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
         }
 
         case NI_SSE2_ExtractInt16:
+        case NI_SSE2_ExtractUInt16:
         {
             op2Reg = op2->gtRegNum;
 
@@ -2395,6 +2321,7 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
             switch (baseType)
             {
                 case TYP_SHORT:
+                case TYP_USHORT:
                     ins = INS_pextrw;
                     break;
                 default:
@@ -2407,44 +2334,7 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
             break;
         }
 
-        case NI_SSE2_ExtractUInt16:
-        {
-            op2Reg = op2->gtRegNum;
-
-            instruction ins;
-            switch (baseType)
-            {
-                case TYP_USHORT:
-                    ins = INS_pextrw;
-                    break;
-                default:
-                    unreached();
-                    break;
-            }
-
-            emit->emitIns_SIMD_R_R_R_I(ins, targetReg, op1Reg, op2Reg, imm8, TYP_SIMD16);
-            break;
-        }
-
         case NI_SSE2_InsertInt16:
-        {
-            op2Reg = op2->gtRegNum;
-
-            instruction ins;
-            switch (baseType)
-            {
-                case TYP_SHORT:
-                    ins = INS_pinsrw;
-                    break;
-                default:
-                    unreached();
-                    break;
-            }
-
-            emit->emitIns_SIMD_R_R_R_I(ins, targetReg, op1Reg, op2Reg, imm8, TYP_SIMD16);
-            break;
-        }
-
         case NI_SSE2_InsertUInt16:
         {
             op2Reg = op2->gtRegNum;
@@ -2521,7 +2411,7 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
             instruction ins;
             switch (baseType)
             {
-                case TYP_UINT:
+                case TYP_ULONG:
                     ins = INS_pmuludq;
                     break;
                 case TYP_DOUBLE:
@@ -2584,7 +2474,7 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
             instruction ins;
             switch (baseType)
             {
-                case TYP_SHORT:
+                case TYP_INT:
                     ins = INS_pmaddwd;
                     break;
                 default:
@@ -2632,10 +2522,10 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
             instruction ins;
             switch (baseType)
             {
-                case TYP_SHORT:
+                case TYP_BYTE:
                     ins = INS_packsswb;
                     break;
-                case TYP_INT:
+                case TYP_SHORT:
                     ins = INS_packssdw;
                     break;
                 default:
@@ -2654,7 +2544,7 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
             instruction ins;
             switch (baseType)
             {
-                case TYP_USHORT:
+                case TYP_UBYTE:
                     ins = INS_packuswb;
                     break;
                 default:
@@ -2673,7 +2563,7 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
             instruction ins;
             switch (baseType)
             {
-                case TYP_UBYTE:
+                case TYP_LONG:
                     ins = INS_psadbw;
                     break;
                 default:
@@ -2750,8 +2640,6 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
 
         case NI_SSE2_ShiftLeftLogical:
         {
-            op2Reg = op2->gtRegNum;
-
             instruction ins;
             switch (baseType)
             {
@@ -2774,10 +2662,12 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
 
             if (imm8 >= 0)
             {
-                emit->emitIns_SIMD_R_R_R_I(ins, targetReg, op1Reg, op2Reg, imm8, TYP_SIMD16);
+                DebugBreak();
+                emit->emitIns_SIMD_R_R_I(ins, targetReg, op1Reg, imm8, TYP_SIMD16);
             }
             else
             {
+                op2Reg = op2->gtRegNum;
                 emit->emitIns_SIMD_R_R_R(ins, targetReg, op1Reg, op2Reg, TYP_SIMD16);
             }
             break;
@@ -2785,11 +2675,11 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
 
         case NI_SSE2_ShiftLeftLogical128BitLane:
         {
-            op2Reg = op2->gtRegNum;
-
             instruction ins;
             switch (baseType)
             {
+                case TYP_UBYTE:
+                case TYP_BYTE:
                 case TYP_SHORT:
                 case TYP_USHORT:
                 case TYP_INT:
@@ -2809,8 +2699,6 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
 
         case NI_SSE2_ShiftRightArithmetic:
         {
-            op2Reg = op2->gtRegNum;
-
             instruction ins;
             switch (baseType)
             {
@@ -2831,6 +2719,7 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
             }
             else
             {
+                op2Reg = op2->gtRegNum;
                 emit->emitIns_SIMD_R_R_R(ins, targetReg, op1Reg, op2Reg, TYP_SIMD16);
             }
             break;
@@ -2838,8 +2727,6 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
 
         case NI_SSE2_ShiftRightLogical:
         {
-            op2Reg = op2->gtRegNum;
-
             instruction ins;
             switch (baseType)
             {
@@ -2866,6 +2753,7 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
             }
             else
             {
+                op2Reg = op2->gtRegNum;
                 emit->emitIns_SIMD_R_R_R(ins, targetReg, op1Reg, op2Reg, TYP_SIMD16);
             }
             break;
@@ -2873,8 +2761,6 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
 
         case NI_SSE2_ShiftRightLogical128BitLane:
         {
-            op2Reg = op2->gtRegNum;
-
             instruction ins;
             switch (baseType)
             {
@@ -2897,8 +2783,6 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
 
         case NI_SSE2_Sqrt:
         {
-            op2Reg = op2->gtRegNum;
-
             instruction ins;
             switch (baseType)
             {
@@ -2910,7 +2794,7 @@ void CodeGen::genSSE2Intrinsic(GenTreeHWIntrinsic* node)
                     break;
             }
 
-            emit->emitIns_SIMD_R_R_R(ins, targetReg, op1Reg, op2Reg, TYP_SIMD16);
+            emit->emitIns_SIMD_R_R(ins, targetReg, op1Reg, TYP_SIMD16);
             break;
         }
 

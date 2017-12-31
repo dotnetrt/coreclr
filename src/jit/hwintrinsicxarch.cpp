@@ -785,12 +785,21 @@ GenTree* Compiler::impSSE2Intrinsic(NamedIntrinsic        intrinsic,
     StackEntry stEntry;
     ssize_t    imm8     = 0;
     var_types  baseType = TYP_UNKNOWN;
+    var_types  srcType  = TYP_UNKNOWN;
+
     switch (intrinsic)
     {
         case NI_SSE2_ConvertToVector128Int32:
         case NI_SSE2_ConvertToVector128Double:
         case NI_SSE2_ConvertToVector128Single:
         case NI_SSE2_ConvertToVector128Int32WithTruncation:
+            assert(sig->numArgs == 1);
+            op1       = impSIMDPopStack(TYP_SIMD16);
+            srcType   = getBaseTypeOfSIMDType(info.compCompHnd->getArgClass(sig, sig->args));
+            baseType  = getBaseTypeOfSIMDType(sig->retTypeSigClass);
+            retNode   = gtNewSimdHWIntrinsicNode(TYP_SIMD16, op1, intrinsic, baseType, 16, srcType);
+            break;
+
         case NI_SSE2_Sqrt:
             assert(sig->numArgs == 1);
             op1      = impSIMDPopStack(TYP_SIMD16);
@@ -806,7 +815,6 @@ GenTree* Compiler::impSSE2Intrinsic(NamedIntrinsic        intrinsic,
         case NI_SSE2_CompareEqual:
         case NI_SSE2_CompareGreaterThan:
         case NI_SSE2_CompareGreaterThanOrEqual:
-        case NI_SSE2_CompareLessThan:
         case NI_SSE2_CompareLessThanOrEqual:
         case NI_SSE2_CompareNotEqual:
         case NI_SSE2_CompareNotGreaterThan:
@@ -838,6 +846,22 @@ GenTree* Compiler::impSSE2Intrinsic(NamedIntrinsic        intrinsic,
             retNode  = gtNewSimdHWIntrinsicNode(TYP_SIMD16, op1, op2, intrinsic, baseType, 16);
             break;
 
+        case NI_SSE2_CompareLessThan:
+            assert(sig->numArgs == 2);
+            op2 = impSIMDPopStack(TYP_SIMD16);
+            op1 = impSIMDPopStack(TYP_SIMD16);
+            baseType = getBaseTypeOfSIMDType(sig->retTypeSigClass);
+            if (baseType == TYP_DOUBLE)
+            {
+                retNode = gtNewSimdHWIntrinsicNode(TYP_SIMD16, op1, op2, intrinsic, baseType, 16);
+            }
+            else
+            {
+                // Select pcmpgtb/pcmpgtw/pcmpgtd instruction with reversed operands
+                retNode = gtNewSimdHWIntrinsicNode(TYP_SIMD16, op2, op1, intrinsic, baseType, 16);
+            }
+            break;
+
         case NI_SSE2_ExtractInt16:
         case NI_SSE2_ExtractUInt16:
         case NI_SSE2_ShiftLeftLogical128BitLane:
@@ -848,7 +872,7 @@ GenTree* Compiler::impSSE2Intrinsic(NamedIntrinsic        intrinsic,
             assert(sig->numArgs == 2);
             stEntry = impPopStack();
             op2     = stEntry.val;
-            if (op2->IsIntegralConst())
+            if (op2->gtOper == GT_CNS_INT)
             {
                 imm8     = op2->AsIntCon()->IconValue();
                 op1      = impSIMDPopStack(TYP_SIMD16);
@@ -868,17 +892,17 @@ GenTree* Compiler::impSSE2Intrinsic(NamedIntrinsic        intrinsic,
         case NI_SSE2_ShiftRightLogical:
             assert(sig->numArgs == 2);
             stEntry = impPopStack();
-            op3     = stEntry.val;
-            if (op3->IsIntegralConst())
+            op2     = stEntry.val;
+            if (op2->gtOper == GT_CNS_INT)
             {
-                imm8     = op3->AsIntCon()->IconValue();
+                imm8     = op2->AsIntCon()->IconValue();
                 op1      = impSIMDPopStack(TYP_SIMD16);
                 baseType = getBaseTypeOfSIMDType(sig->retTypeSigClass);
                 retNode  = gtNewSimdHWIntrinsicNode(TYP_SIMD16, op1, imm8, intrinsic, baseType, 16);
             }
-            else if (op3->OperIsSimdHWIntrinsic())
+            else if (op2->gtType == TYP_SIMD16)
             {
-                op2      = impSIMD(TYP_SIMD16, op3, &stEntry.seTypeInfo);
+                op2      = impSIMD(TYP_SIMD16, stEntry.val, &stEntry.seTypeInfo);
                 op1      = impSIMDPopStack(TYP_SIMD16);
                 baseType = getBaseTypeOfSIMDType(sig->retTypeSigClass);
                 retNode  = gtNewSimdHWIntrinsicNode(TYP_SIMD16, op1, op2, intrinsic, baseType, 16);
@@ -897,10 +921,10 @@ GenTree* Compiler::impSSE2Intrinsic(NamedIntrinsic        intrinsic,
             assert(sig->numArgs == 3);
             stEntry = impPopStack();
             op3     = stEntry.val;
-            if (op3->IsIntegralConst())
+            if (op3->gtOper == GT_CNS_INT)
             {
                 imm8     = op3->AsIntCon()->IconValue();
-                op2      = impPopStack().val->AsVal();
+                op2      = impPopStack().val;
                 op1      = impSIMDPopStack(TYP_SIMD16);
                 baseType = getBaseTypeOfSIMDType(sig->retTypeSigClass);
                 retNode  = gtNewSimdHWIntrinsicNode(TYP_SIMD16, op1, op2, imm8, intrinsic, baseType, 16);
@@ -918,11 +942,11 @@ GenTree* Compiler::impSSE2Intrinsic(NamedIntrinsic        intrinsic,
             assert(sig->numArgs == 3 || sig->numArgs == 2);
             stEntry = impPopStack();
             op3     = stEntry.val;
-            if (op3->IsIntegralConst())
+            if (op3->gtOper == GT_CNS_INT)
             {
+                imm8 = op3->AsIntCon()->IconValue();
                 if (sig->numArgs == 3)
                 {
-                    imm8     = op3->AsIntCon()->IconValue();
                     op2      = impSIMDPopStack(TYP_SIMD16);
                     op1      = impSIMDPopStack(TYP_SIMD16);
                     baseType = getBaseTypeOfSIMDType(sig->retTypeSigClass);
@@ -930,7 +954,6 @@ GenTree* Compiler::impSSE2Intrinsic(NamedIntrinsic        intrinsic,
                 }
                 else if (sig->numArgs == 2)
                 {
-                    imm8     = op3->AsIntCon()->IconValue();
                     op1      = impSIMDPopStack(TYP_SIMD16);
                     baseType = getBaseTypeOfSIMDType(sig->retTypeSigClass);
                     retNode  = gtNewSimdHWIntrinsicNode(TYP_SIMD16, op1, imm8, intrinsic, baseType, 16);

@@ -4226,7 +4226,12 @@ struct GenTreeSIMD : public GenTreeJitIntrinsic
 #ifdef FEATURE_HW_INTRINSICS
 struct GenTreeHWIntrinsic : public GenTreeJitIntrinsic
 {
+
     NamedIntrinsic gtHWIntrinsicId;
+    var_types      gtSrcOneType;
+    var_types      gtSrcTwoType;
+
+public:
 
     GenTreeHWIntrinsic(var_types type, NamedIntrinsic hwIntrinsicID, var_types baseType, unsigned size)
         : GenTreeJitIntrinsic(GT_HWIntrinsic, type, nullptr, nullptr, baseType, size), gtHWIntrinsicId(hwIntrinsicID)

@@ -17940,7 +17940,8 @@ GenTreeHWIntrinsic* Compiler::gtNewSimdHWIntrinsicNode(var_types      type,
                                                        GenTree*       op3,
                                                        NamedIntrinsic hwIntrinsicID,
                                                        var_types      baseType,
-                                                       unsigned       size)
+                                                       unsigned       size,
+                                                       var_types      srcType)
 {
     SetOpLclRelatedToSIMDIntrinsic(op1);
     SetOpLclRelatedToSIMDIntrinsic(op2);

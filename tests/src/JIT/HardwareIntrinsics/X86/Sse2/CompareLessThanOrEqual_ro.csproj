@@ -29,7 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CompareLessThanOrEqual.cs" />
-    <Compile Include="TestTableVector128.cs" />
+    <Compile Include="TestTableSse2.cs" />
   </ItemGroup>
   <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), dir.targets))\dir.targets" />
   <PropertyGroup Condition=" '$(MsBuildProjectDirOverride)' != '' ">

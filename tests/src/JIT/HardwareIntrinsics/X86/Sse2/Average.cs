@@ -4,10 +4,8 @@
 //
 
 using System;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics.X86;
 using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
 
 namespace IntelHardwareIntrinsicTest
 {
@@ -24,8 +22,8 @@ namespace IntelHardwareIntrinsicTest
 
             if (Sse2.IsSupported)
             {
-                using (var ushortTable = TestTableVector128<ushort>.Create(testsCount))
-                using (var byteTable = TestTableVector128<byte>.Create(testsCount))
+                using (var ushortTable = TestTableSse2<ushort>.Create(testsCount))
+                using (var byteTable = TestTableSse2<byte>.Create(testsCount))
                 {
                     for (int i = 0; i < testsCount; i++)
                     {

@@ -4,10 +4,8 @@
 //
 
 using System;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Runtime.Intrinsics.X86;
 using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
 
 namespace IntelHardwareIntrinsicTest
 {
@@ -24,15 +22,15 @@ namespace IntelHardwareIntrinsicTest
 
             if (Sse2.IsSupported)
             {
-                using (var doubleTable = TestTableVector128<double>.Create(testsCount))
-                using (var longTable = TestTableVector128<long>.Create(testsCount))
-                using (var ulongTable = TestTableVector128<ulong>.Create(testsCount))
-                using (var intTable = TestTableVector128<int>.Create(testsCount))
-                using (var uintTable = TestTableVector128<uint>.Create(testsCount))
-                using (var shortTable = TestTableVector128<short>.Create(testsCount))
-                using (var ushortTable = TestTableVector128<ushort>.Create(testsCount))
-                using (var sbyteTable = TestTableVector128<sbyte>.Create(testsCount))
-                using (var byteTable = TestTableVector128<byte>.Create(testsCount))
+                using (var doubleTable = TestTableSse2<double>.Create(testsCount))
+                using (var longTable = TestTableSse2<long>.Create(testsCount))
+                using (var ulongTable = TestTableSse2<ulong>.Create(testsCount))
+                using (var intTable = TestTableSse2<int>.Create(testsCount))
+                using (var uintTable = TestTableSse2<uint>.Create(testsCount))
+                using (var shortTable = TestTableSse2<short>.Create(testsCount))
+                using (var ushortTable = TestTableSse2<ushort>.Create(testsCount))
+                using (var sbyteTable = TestTableSse2<sbyte>.Create(testsCount))
+                using (var byteTable = TestTableSse2<byte>.Create(testsCount))
                 {
                     for (int i = 0; i < testsCount; i++)
                     {

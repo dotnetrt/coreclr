@@ -18,52 +18,62 @@ namespace IntelHardwareIntrinsicTest
         {
             int testResult = Pass;
             int testsCount = 21;
-            string methodUnderTestName = nameof(Sse2.AddSaturate);
+            string methodUnderTestName = nameof(Sse2.SubtractSaturate);
 
             if (Sse2.IsSupported)
             {
-                using (var shortTable = TestTableVector128<short>.Create(testsCount))
-                using (var ushortTable = TestTableVector128<ushort>.Create(testsCount))
-                using (var sbyteTable = TestTableVector128<sbyte>.Create(testsCount))
-                using (var byteTable = TestTableVector128<byte>.Create(testsCount))
+                using (var shortTable = TestTableSse2<short>.Create(testsCount))
+                using (var ushortTable = TestTableSse2<ushort>.Create(testsCount))
+                using (var sbyteTable = TestTableSse2<sbyte>.Create(testsCount))
+                using (var byteTable = TestTableSse2<byte>.Create(testsCount))
                 {
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<short>, Vector128<short>, Vector128<short>) value = shortTable[i];
-                        var result = Sse2.AddSaturate(value.Item1, value.Item2);
+                        var result = Sse2.SubtractSaturate(value.Item1, value.Item2);
                         shortTable.SetOutArray(result);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<ushort>, Vector128<ushort>, Vector128<ushort>) value = ushortTable[i];
-                        var result = Sse2.AddSaturate(value.Item1, value.Item2);
+                        var result = Sse2.SubtractSaturate(value.Item1, value.Item2);
                         ushortTable.SetOutArray(result);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<sbyte>, Vector128<sbyte>, Vector128<sbyte>) value = sbyteTable[i];
-                        var result = Sse2.AddSaturate(value.Item1, value.Item2);
+                        var result = Sse2.SubtractSaturate(value.Item1, value.Item2);
                         sbyteTable.SetOutArray(result);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<byte>, Vector128<byte>, Vector128<byte>) value = byteTable[i];
-                        var result = Sse2.AddSaturate(value.Item1, value.Item2);
+                        var result = Sse2.SubtractSaturate(value.Item1, value.Item2);
                         byteTable.SetOutArray(result);
                     }
 
-                    CheckMethod<short> checkInt16 = (short x, short y, short z, ref short a) => (a = (short)(x & y)) == z;
+                    CheckMethod<short> checkInt16 = (short x, short y, short z, ref short a) =>
+                    {
+                        int tmp = (int)x - y;
+                        a = (short)(tmp > short.MaxValue ? short.MaxValue : tmp < short.MinValue ? short.MinValue : tmp);
+                        return a == z;
+                    };
 
                     if (!shortTable.CheckResult(checkInt16))
                     {
-                        PrintError(shortTable, methodUnderTestName, "(short x, short y, short z, ref short a) => (a = (short)(x & y)) == z", checkInt16);
+                        PrintError(shortTable, methodUnderTestName, "(short x, short y, short z, ref short a) => (a = (short)(x - y)) == z", checkInt16);
                         testResult = Fail;
                     }
 
-                    CheckMethod<ushort> checkUInt16 = (ushort x, ushort y, ushort z, ref ushort a) => (a = (ushort)(x & y)) == z;
+                    CheckMethod<ushort> checkUInt16 = (ushort x, ushort y, ushort z, ref ushort a) =>
+                    {
+                        int tmp = (int)x - y;
+                        a = (ushort)(tmp > ushort.MaxValue ? ushort.MaxValue : tmp < 0 ? 0 : tmp);
+                        return a == z;
+                    };
 
                     if (!ushortTable.CheckResult(checkUInt16))
                     {
@@ -71,7 +81,12 @@ namespace IntelHardwareIntrinsicTest
                         testResult = Fail;
                     }
 
-                    CheckMethod<sbyte> checkSByte = (sbyte x, sbyte y, sbyte z, ref sbyte a) => (a = (sbyte)(x & y)) == z;
+                    CheckMethod<sbyte> checkSByte = (sbyte x, sbyte y, sbyte z, ref sbyte a) =>
+                    {
+                        int tmp = (int)x - y;
+                        a = (sbyte)(tmp > sbyte.MaxValue ? sbyte.MaxValue : tmp < sbyte.MinValue ? sbyte.MinValue : tmp );
+                        return a == z;
+                    };
 
                     if (!sbyteTable.CheckResult(checkSByte))
                     {
@@ -79,7 +94,12 @@ namespace IntelHardwareIntrinsicTest
                         testResult = Fail;
                     }
 
-                    CheckMethod<byte> checkByte = (byte x, byte y, byte z, ref byte a) => (a = (byte)(x & y)) == z;
+                    CheckMethod<byte> checkByte = (byte x, byte y, byte z, ref byte a) =>
+                    {
+                        int tmp = (int)x - y;
+                        a = (byte)(tmp > byte.MaxValue ? byte.MaxValue : tmp < 0 ? 0 : tmp);
+                        return a == z;
+                    };
 
                     if (!byteTable.CheckResult(checkByte))
                     {
