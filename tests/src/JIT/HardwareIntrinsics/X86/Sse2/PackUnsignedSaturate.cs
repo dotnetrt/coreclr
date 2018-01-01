@@ -27,7 +27,8 @@ namespace IntelHardwareIntrinsicTest
                     for (int i = 0; i < testsCount; i++)
                     {
                         (Vector128<short>, Vector128<short>) value = shortTable[i];
-                        shortTable.SetOutArrayU(Sse2.PackUnsignedSaturate(value.Item1, value.Item2));
+                        Vector128<byte> result = Sse2.PackUnsignedSaturate(value.Item1, value.Item2);
+                        shortTable.SetOutArrayU(result);
                     }
 
                     CheckMethodSixteen<short, byte> checkInt16 =

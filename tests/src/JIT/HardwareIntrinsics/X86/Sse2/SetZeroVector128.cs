@@ -18,7 +18,7 @@ namespace IntelHardwareIntrinsicTest
         {
             int testResult = Pass;
             int testsCount = 21;
-            string methodUnderTestName = nameof(Sse2.Xor);
+            string methodUnderTestName = nameof(Sse2.SetZeroVector128);
 
             if (Sse2.IsSupported)
             {
@@ -34,59 +34,59 @@ namespace IntelHardwareIntrinsicTest
                 {
                     for (int i = 0; i < testsCount; i++)
                     {
-                        (Vector128<double>, Vector128<double>, Vector128<double>) value = doubleTable[i];
-                        doubleTable.SetOutArray(Sse2.Xor(value.Item1, value.Item2));
+                        Vector128<double> result = Sse2.SetZeroVector128<double>();
+                        doubleTable.SetOutArray(result, i);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
-                        (Vector128<long>, Vector128<long>, Vector128<long>) value = longTable[i];
-                        longTable.SetOutArray(Sse2.Xor(value.Item1, value.Item2));
+                        Vector128<long> result = Sse2.SetZeroVector128<long>();
+                        longTable.SetOutArray(result, i);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
-                        (Vector128<ulong>, Vector128<ulong>, Vector128<ulong>) value = ulongTable[i];
-                        ulongTable.SetOutArray(Sse2.Xor(value.Item1, value.Item2));
+                        Vector128<ulong> result = Sse2.SetZeroVector128<ulong>();
+                        ulongTable.SetOutArray(result, i);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
-                        (Vector128<int>, Vector128<int>, Vector128<int>) value = intTable[i];
-                        intTable.SetOutArray(Sse2.Xor(value.Item1, value.Item2));
+                        Vector128<int> result = Sse2.SetZeroVector128<int>();
+                        intTable.SetOutArray(result, i);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
-                        (Vector128<uint>, Vector128<uint>, Vector128<uint>) value = uintTable[i];
-                        uintTable.SetOutArray(Sse2.Xor(value.Item1, value.Item2));
+                        Vector128<uint> result = Sse2.SetZeroVector128<uint>();
+                        uintTable.SetOutArray(result, i);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
-                        (Vector128<short>, Vector128<short>, Vector128<short>) value = shortTable[i];
-                        shortTable.SetOutArray(Sse2.Xor(value.Item1, value.Item2));
+                        Vector128<short> result = Sse2.SetZeroVector128<short>();
+                        shortTable.SetOutArray(result, i);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
-                        (Vector128<ushort>, Vector128<ushort>, Vector128<ushort>) value = ushortTable[i];
-                        ushortTable.SetOutArray(Sse2.Xor(value.Item1, value.Item2));
+                        Vector128<ushort> result = Sse2.SetZeroVector128<ushort>();
+                        ushortTable.SetOutArray(result, i);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
-                        (Vector128<sbyte>, Vector128<sbyte>, Vector128<sbyte>) value = sbyteTable[i];
-                        sbyteTable.SetOutArray(Sse2.Xor(value.Item1, value.Item2));
+                        Vector128<sbyte> result = Sse2.SetZeroVector128<sbyte>();
+                        sbyteTable.SetOutArray(result, i);
                     }
 
                     for (int i = 0; i < testsCount; i++)
                     {
-                        (Vector128<byte>, Vector128<byte>, Vector128<byte>) value = byteTable[i];
-                        byteTable.SetOutArray(Sse2.Xor(value.Item1, value.Item2));
+                        Vector128<byte> result = Sse2.SetZeroVector128<byte>();
+                        byteTable.SetOutArray(result, i);
                     }
 
-                    CheckMethod<double> checkDouble = (double x, double y, double z, ref double a) => (a = BitwiseXor(x, y)) == z;
+                    CheckMethod<double> checkDouble = (double x, double y, double z, ref double a) => (a = BitwiseXor(x, x)) == z;
 
                     if (!doubleTable.CheckResult(checkDouble))
                     {
@@ -94,67 +94,67 @@ namespace IntelHardwareIntrinsicTest
                         testResult = Fail;
                     }
 
-                    CheckMethod<long> checkLong = (long x, long y, long z, ref long a) => (a = x ^ y) == z;
+                    CheckMethod<long> checkLong = (long x, long y, long z, ref long a) => (a = x ^ x) == z;
 
                     if (!longTable.CheckResult(checkLong))
                     {
-                        PrintError(longTable, methodUnderTestName, "(long x, long y, long z, ref long a) => (a = x ^ y) == z", checkLong);
+                        PrintError(longTable, methodUnderTestName, "(long x, long y, long z, ref long a) => (a = x ^ x) == z", checkLong);
                         testResult = Fail;
                     }
 
-                    CheckMethod<ulong> checkUlong = (ulong x, ulong y, ulong z, ref ulong a) => (a = x ^ y) == z;
+                    CheckMethod<ulong> checkUlong = (ulong x, ulong y, ulong z, ref ulong a) => (a = x ^ x) == z;
 
                     if (!longTable.CheckResult(checkLong))
                     {
-                        PrintError(ulongTable, methodUnderTestName, "(ulong x, ulong y, ulong z, ref ulong a) => (a = x ^ y) == z", checkUlong);
+                        PrintError(ulongTable, methodUnderTestName, "(ulong x, ulong y, ulong z, ref ulong a) => (a = x ^ x) == z", checkUlong);
                         testResult = Fail;
                     }
 
-                    CheckMethod<int> checkInt32 = (int x, int y, int z, ref int a) => (a = x ^ y) == z;
+                    CheckMethod<int> checkInt32 = (int x, int y, int z, ref int a) => (a = x ^ x) == z;
 
                     if (!intTable.CheckResult(checkInt32))
                     {
-                        PrintError(intTable, methodUnderTestName, "(int x, int y, int z, ref int a) => (a = x ^ y) == z", checkInt32);
+                        PrintError(intTable, methodUnderTestName, "(int x, int y, int z, ref int a) => (a = x ^ x) == z", checkInt32);
                         testResult = Fail;
                     }
 
-                    CheckMethod<uint> checkUInt32 = (uint x, uint y, uint z, ref uint a) => (a = x ^ y) == z;
+                    CheckMethod<uint> checkUInt32 = (uint x, uint y, uint z, ref uint a) => (a = x ^ x) == z;
 
                     if (!uintTable.CheckResult(checkUInt32))
                     {
-                        PrintError(uintTable, methodUnderTestName, "(uint x, uint y, uint z, ref uint a) => (a = x ^ y) == z", checkUInt32);
+                        PrintError(uintTable, methodUnderTestName, "(uint x, uint y, uint z, ref uint a) => (a = x ^ x) == z", checkUInt32);
                         testResult = Fail;
                     }
 
-                    CheckMethod<short> checkInt16 = (short x, short y, short z, ref short a) => (a = (short)(x ^ y)) == z;
+                    CheckMethod<short> checkInt16 = (short x, short y, short z, ref short a) => (a = (short)(x ^ x)) == z;
 
                     if (!shortTable.CheckResult(checkInt16))
                     {
-                        PrintError(shortTable, methodUnderTestName, "(short x, short y, short z, ref short a) => (a = (short)(x ^ y)) == z", checkInt16);
+                        PrintError(shortTable, methodUnderTestName, "(short x, short y, short z, ref short a) => (a = (short)(x ^ x)) == z", checkInt16);
                         testResult = Fail;
                     }
 
-                    CheckMethod<ushort> checkUInt16 = (ushort x, ushort y, ushort z, ref ushort a) => (a = (ushort)(x ^ y)) == z;
+                    CheckMethod<ushort> checkUInt16 = (ushort x, ushort y, ushort z, ref ushort a) => (a = (ushort)(x ^ x)) == z;
 
                     if (!ushortTable.CheckResult(checkUInt16))
                     {
-                        PrintError(ushortTable, methodUnderTestName, "(ushort x, ushort y, ushort z, ref ushort a) => (a = (ushort)(x ^ y)) == z", checkUInt16);
+                        PrintError(ushortTable, methodUnderTestName, "(ushort x, ushort y, ushort z, ref ushort a) => (a = (ushort)(x ^ x)) == z", checkUInt16);
                         testResult = Fail;
                     }
 
-                    CheckMethod<sbyte> checkSByte = (sbyte x, sbyte y, sbyte z, ref sbyte a) => (a = (sbyte)(x ^ y)) == z;
+                    CheckMethod<sbyte> checkSByte = (sbyte x, sbyte y, sbyte z, ref sbyte a) => (a = (sbyte)(x ^ x)) == z;
 
                     if (!sbyteTable.CheckResult(checkSByte))
                     {
-                        PrintError(sbyteTable, methodUnderTestName, "(sbyte x, sbyte y, sbyte z, ref sbyte a) => (a = (sbyte)(x ^ y)) == z", checkSByte);
+                        PrintError(sbyteTable, methodUnderTestName, "(sbyte x, sbyte y, sbyte z, ref sbyte a) => (a = (sbyte)(x ^ x)) == z", checkSByte);
                         testResult = Fail;
                     }
 
-                    CheckMethod<byte> checkByte = (byte x, byte y, byte z, ref byte a) => (a = (byte)(x ^ y)) == z;
+                    CheckMethod<byte> checkByte = (byte x, byte y, byte z, ref byte a) => (a = (byte)(x ^ x)) == z;
 
                     if (!byteTable.CheckResult(checkByte))
                     {
-                        PrintError(byteTable, methodUnderTestName, "(byte x, byte y, byte z, ref byte a) => (a = (byte)(x ^ y)) == z", checkByte);
+                        PrintError(byteTable, methodUnderTestName, "(byte x, byte y, byte z, ref byte a) => (a = (byte)(x ^ x)) == z", checkByte);
                         testResult = Fail;
                     }
                 }

@@ -161,8 +161,6 @@ bool emitter::IsDstDstSrcAVXInstruction(instruction ins)
         case INS_pmuludq:
         case INS_por:
         case INS_psadbw:
-        case INS_pshufhw:
-        case INS_pshuflw:
         case INS_psubb:
         case INS_psubd:
         case INS_psubq:
@@ -3517,7 +3515,7 @@ void emitter::emitIns_R(instruction ins, emitAttr attr, regNumber reg)
             if (size == EA_1BYTE)
                 sz = 2; // Use the long form as the small one has no 'w' bit
             else
-                sz = 1; // Use short form
+                sz    = 1; // Use short form
 
 #endif // !_TARGET_AMD64_
 
@@ -4836,7 +4834,7 @@ void emitter::emitIns_AR_R(instruction ins, emitAttr attr, regNumber ireg, regNu
 #if FEATURE_STACK_FP_X87
         fmt = emitInsModeFormat(ins, IF_ARD, IF_TRD_ARD, IF_AWR_TRD);
 #else  // !FEATURE_STACK_FP_X87
-        fmt = emitInsModeFormat(ins, IF_ARD);
+        fmt       = emitInsModeFormat(ins, IF_ARD);
 #endif // !FEATURE_STACK_FP_X87
     }
     else
@@ -5310,7 +5308,6 @@ void emitter::emitIns_SIMD_R_R_C(
         emitIns_R_C(ins, attr, reg, fldHnd, offs);
     }
 }
-
 
 void emitter::emitIns_SIMD_R_R_R(instruction ins, emitAttr attr, regNumber reg, regNumber reg1, regNumber reg2)
 {

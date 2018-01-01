@@ -100,9 +100,10 @@ namespace IntelHardwareIntrinsicTest
         public Vector128<T> Vector3 => Unsafe.Read<Vector128<T>>((byte*)OutArrayPtr + (_index * _stepSize));
         public int Index { get => _index; set => _index = value; }
 
-        public void SetOutArray(Vector128<T> value)
+        public void SetOutArray(Vector128<T> value, int index = -1)
         {
-            Unsafe.Write((byte*)OutArrayPtr + (_index * _stepSize), value);
+            index = index < 0 ? _index : index;
+            Unsafe.Write((byte*)OutArrayPtr + (index * _stepSize), value);
         }
 
         public (Vector128<T>, Vector128<T>, Vector128<T>) this[int index]
