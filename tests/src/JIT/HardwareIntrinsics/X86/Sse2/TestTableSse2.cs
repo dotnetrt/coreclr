@@ -106,6 +106,12 @@ namespace IntelHardwareIntrinsicTest
             Unsafe.Write((byte*)OutArrayPtr + (index * _stepSize), value);
         }
 
+        public void SetOutArray(bool value1, Vector128<T> value2, int index = -1)
+        {
+            index = index < 0 ? _index : index;
+            Unsafe.Write((byte*)OutArrayPtr + (index * _stepSize), value2);
+        }
+
         public (Vector128<T>, Vector128<T>, Vector128<T>) this[int index]
         {
             get
